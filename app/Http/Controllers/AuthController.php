@@ -6,16 +6,30 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Registered;
+use App\Http\Requests\CustomEmailVerificationRequest;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-	public function register(UserRegisterRequest $request)
+	public function check_auth(): JsonResponse
+	{
+		return response()->json([
+			'user' => auth()->user(),
+		]);
+	}
+
+	public function register(UserRegisterRequest $request): JsonResponse
 	{
 		//create user
+
 		$user = User::create([
 			'name'     => $request['name'],
 			'email'    => $request['email'],
@@ -23,19 +37,20 @@ class AuthController extends Controller
 		]);
 		if ($user) {
 			//send verification email
-			Auth::attempt(['email' => $request['email'], 'password' => $request['password']]);
 			event(new Registered($user));
 			return response()->json([
-				'message' => 'USER_REGISTERED_SUCCESSFULLY',
+				'message_key' => 'USER_REGISTERED_SUCCESSFULLY',
+				'data'        => [
+					'email' => $request['email'],
+				],
 			]);
 		} else {
 			//emai || name already exists is handled by form request validations
-			//and the error needs to be modified in appserviceprovider in extensions
 			return response()->noContent(500);
 		}
 	}
 
-	public function login(UserLoginRequest $request)
+	public function login(UserLoginRequest $request): JsonResponse
 	{
 		$credentials = ['password' => $request['password']];
 		if ($request->has('email')) {
@@ -43,52 +58,103 @@ class AuthController extends Controller
 		} else {
 			$credentials['name'] = $request['name'];
 		}
-		//email not verified is handled by verified middleware
-		//if it fails it redirects to verification.notice route which send appropriate
-		//response to frontend
-		if ($user = Auth::attempt($credentials, $request['remember'])) {
+		if (Auth::attempt($credentials, $request['remember'])) {
 			return response()->json([
-				'message'   => 'LOGIN_SUCCESS',
-				'user_data' => new UserResource($user),
+				'message_key'   => 'LOGIN_SUCCESS',
+				'user_data'     => new UserResource(auth()->user()),
 			]);
 		} else {
 			return response()->json([
-				'message' => 'LOGIN_FAILED',
+				'message_key' => 'LOGIN_FAILED',
 			], 404);
 		}
 	}
 
-	public function logout(Request $request)
+	public function logout(Request $request): Response
 	{
 		Auth::logout();
-		$request->session()->invalidate()();
+
+		$request->session()->invalidate();
+
 		$request->session()->regenerateToken();
 		return response()->noContent();
 	}
 
-	public function verification_notice()
+	public function verification_notice(): JsonResponse
 	{
 		return response()->json([
-			'message' => 'EMAIL_MUST_BE_VERIFIED',
+			'message_key' => 'EMAIL_MUST_BE_VERIFIED',
 		], 403);
 	}
 
-	public function verification_verify(EmailVerificationRequest $request)
+	public function verification_verify(CustomEmailVerificationRequest $request): JsonResponse
 	{
+		if (!$request->hasValidSignature(true)) {
+			return response()->json([
+				'message_key'   => 'LINK_EXPIRED',
+				'email'         => User::find($request->route('id'))->email,
+			], 403);
+		}
 		$request->fulfill();
 
 		return response()->json([
-			'message'   => 'EMAIL_VERIFIED',
-			'user_data' => new UserResource(auth()->user()),
+			'message_key'   => 'EMAIL_VERIFIED',
 		]);
 	}
 
-	public function verification_send(Request $request)
+	public function verification_send(Request $request): Response
 	{
-		$request->user()->sendEmailVerificationNotification();
+		if ($request->has('email')) {
+			$user = User::where('email', $request->input('email'))->get();
+			if (count($user)) {
+				$user[0]->sendEmailVerificationNotification();
+				return response()->json([
+					'message_key' => 'VERIFICATION_LINK_SENT',
+				]);
+			}
+		}
 
-		return response()->json([
-			'message' => 'VERIFICATION_LINK_SENT',
+		return response()->noContent(404);
+	}
+
+	public function forgot_password(Request $request): Response
+	{
+		$request->validate(['email' => 'required|email']);
+
+		$status = Password::sendResetLink(
+			$request->only('email')
+		);
+
+		return $status === Password::RESET_LINK_SENT
+					? response()->noContent(200)
+					: response()->json([
+						'message' => 'not found ',
+					]);
+	}
+
+	public function reset_password(Request $request): Response
+	{
+		$request->validate([
+			'token'    => 'required',
+			'email'    => 'required|email',
+			'password' => 'required|min:8|confirmed',
 		]);
+
+		$status = Password::reset(
+			$request->only('email', 'password', 'password_confirmation', 'token'),
+			function (User $user, string $password) {
+				$user->forceFill([
+					'password' => Hash::make($password),
+				])->setRememberToken(Str::random(60));
+
+				$user->save();
+
+				event(new PasswordReset($user));
+			}
+		);
+
+		return $status === Password::PASSWORD_RESET
+					? response()->noContent(200)
+					: response()->noContent(500);
 	}
 }

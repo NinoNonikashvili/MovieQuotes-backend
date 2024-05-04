@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\EnsureExists;
+use App\Http\Middleware\EnsureGuestIsVerified;
 
 return Application::configure(basePath: dirname(__DIR__))
 	->withRouting(
@@ -13,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
 	)
 	->withMiddleware(function (Middleware $middleware) {
 		$middleware->statefulApi();
+		$middleware->alias([
+			'ensure-exists'         => EnsureExists::class,
+			'ensure-guest-verified' => EnsureGuestIsVerified::class,
+		]);
 	})
 	->withExceptions(function (Exceptions $exceptions) {
 	})->create();
