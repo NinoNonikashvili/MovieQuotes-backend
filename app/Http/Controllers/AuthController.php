@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
@@ -16,6 +15,10 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Exceptions;
 
 class AuthController extends Controller
 {
@@ -55,9 +58,18 @@ class AuthController extends Controller
 		$credentials = ['password' => $request['password']];
 		if ($request->has('email')) {
 			$credentials['email'] = $request['email'];
+			//check if registered bu gmail
+			$user = User::where('email', $request->input('email'))->get();
+			if (count($user) && !$user[0]->password) {
+				return response()->json([
+					'message_key'   => 'LOGIN_FAILED',
+					'message'       => __('validation.gmail_login'),
+				], 403);
+			}
 		} else {
 			$credentials['name'] = $request['name'];
 		}
+
 		if (Auth::attempt($credentials, $request['remember'])) {
 			return response()->json([
 				'message_key'   => 'LOGIN_SUCCESS',
@@ -156,5 +168,41 @@ class AuthController extends Controller
 		return $status === Password::PASSWORD_RESET
 					? response()->noContent(200)
 					: response()->noContent(500);
+	}
+
+	public function auth_redirect(): JsonResponse
+	{
+		return response()->json([
+			'url'=> Socialite::driver('google')->redirect()->getTargetUrl(),
+		]);
+	}
+
+	public function auth_callback(): JsonResponse
+	{
+		try {
+			$user = Socialite::driver('google')->user();
+		} catch (Exceptions $e) {
+			return response()->noContent(500);
+		}
+
+		// check if they're an existing user
+		$existing = User::where('email', $user->email)->first();
+		if ($existing) {
+			// log the user in
+			auth()->login($existing);
+		} else {
+			// create a new user
+			$newUser = new User;
+			$newUser->name = 'user';
+			$newUser->email = $user->email;
+			$newUser->google_id = $user->id;
+			$newUser->email_verified_at = Carbon::now();
+			$newUser->save();
+			auth()->login($newUser);
+		}
+
+		return response()->json([
+			'user' => auth()->user(),
+		]);
 	}
 }

@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\EnsureExists;
 use App\Http\Middleware\EnsureGuestIsVerified;
+use App\Http\Middleware\SetLangage;
 
 return Application::configure(basePath: dirname(__DIR__))
 	->withRouting(
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 		$middleware->alias([
 			'ensure-exists'         => EnsureExists::class,
 			'ensure-guest-verified' => EnsureGuestIsVerified::class,
+			'lang'                  => SetLangage::class,
 		]);
 	})
 	->withExceptions(function (Exceptions $exceptions) {
