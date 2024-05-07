@@ -17,12 +17,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Exceptions;
 
 class AuthController extends Controller
 {
-	public function check_auth(): JsonResponse
+	public function checkAuth(): JsonResponse
 	{
 		return response()->json([
 			'user' => auth()->user(),
@@ -92,14 +91,14 @@ class AuthController extends Controller
 		return response()->noContent();
 	}
 
-	public function verification_notice(): JsonResponse
+	public function verificationNotice(): JsonResponse
 	{
 		return response()->json([
 			'message_key' => 'EMAIL_MUST_BE_VERIFIED',
 		], 403);
 	}
 
-	public function verification_verify(CustomEmailVerificationRequest $request): JsonResponse
+	public function verificationVerify(CustomEmailVerificationRequest $request): JsonResponse
 	{
 		if (!$request->hasValidSignature(true)) {
 			return response()->json([
@@ -114,7 +113,7 @@ class AuthController extends Controller
 		]);
 	}
 
-	public function verification_send(Request $request): Response
+	public function verificationSend(Request $request): Response
 	{
 		if ($request->has('email')) {
 			$user = User::where('email', $request->input('email'))->get();
@@ -129,10 +128,8 @@ class AuthController extends Controller
 		return response()->noContent(404);
 	}
 
-	public function forgot_password(Request $request): Response
+	public function forgotPassword(Request $request): Response
 	{
-		$request->validate(['email' => 'required|email']);
-
 		$status = Password::sendResetLink(
 			$request->only('email')
 		);
@@ -144,14 +141,8 @@ class AuthController extends Controller
 					]);
 	}
 
-	public function reset_password(Request $request): Response
+	public function resetPassword(Request $request): Response
 	{
-		$request->validate([
-			'token'    => 'required',
-			'email'    => 'required|email',
-			'password' => 'required|min:8|confirmed',
-		]);
-
 		$status = Password::reset(
 			$request->only('email', 'password', 'password_confirmation', 'token'),
 			function (User $user, string $password) {
@@ -170,36 +161,47 @@ class AuthController extends Controller
 					: response()->noContent(500);
 	}
 
-	public function auth_redirect(): JsonResponse
+	public function authRedirect(): JsonResponse
 	{
 		return response()->json([
 			'url'=> Socialite::driver('google')->redirect()->getTargetUrl(),
 		]);
 	}
 
-	public function auth_callback(): JsonResponse
+	public function authCallback(): JsonResponse
 	{
 		try {
-			$user = Socialite::driver('google')->user();
+			$googleUser = Socialite::driver('google')->user();
 		} catch (Exceptions $e) {
 			return response()->noContent(500);
 		}
 
+		$user = User::updateOrCreate(
+			[
+				'google_id' => $googleUser->id,
+			],
+			[
+				'name'              => 'user',
+				'email'             => $googleUser->email,
+				'email_verified_at' => now(),
+			]
+		);
+		auth()->login($user);
 		// check if they're an existing user
-		$existing = User::where('email', $user->email)->first();
-		if ($existing) {
-			// log the user in
-			auth()->login($existing);
-		} else {
-			// create a new user
-			$newUser = new User;
-			$newUser->name = 'user';
-			$newUser->email = $user->email;
-			$newUser->google_id = $user->id;
-			$newUser->email_verified_at = Carbon::now();
-			$newUser->save();
-			auth()->login($newUser);
-		}
+		// $existing = User::where('email', $user->email)->first();
+		// if ($existing) {
+		// 	// log the user in
+		// 	auth()->login($existing);
+		// } else {
+		// 	// create a new user
+		// 	$newUser = new User;
+		// 	$newUser->name = 'user';
+		// 	$newUser->email = $user->email;
+		// 	$newUser->google_id = $user->id;
+		// 	$newUser->email_verified_at = Carbon::now();
+		// 	$newUser->save();
+		// 	auth()->login($newUser);
+		// }
 
 		return response()->json([
 			'user' => auth()->user(),

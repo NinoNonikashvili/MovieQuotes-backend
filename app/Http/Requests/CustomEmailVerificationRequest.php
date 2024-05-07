@@ -5,8 +5,6 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Validator;
 
 class CustomEmailVerificationRequest extends EmailVerificationRequest
 {
@@ -19,8 +17,6 @@ class CustomEmailVerificationRequest extends EmailVerificationRequest
 	{
 		return true;
 	}
-
-
 
 	/**
 	 * Fulfill the email verification request.

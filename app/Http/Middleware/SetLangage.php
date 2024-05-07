@@ -20,9 +20,6 @@ class SetLangage
 		if ($lang) {
 			App::setLocale($lang);
 		}
-		// return response()->json([
-		// 	'data'=> App::getLocale(),
-		// ]);
 
 		return $next($request);
 	}
