@@ -28,7 +28,7 @@ class AuthController extends Controller
 		]);
 	}
 
-	public function register(UserRegisterRequest $request): JsonResponse
+	public function register(UserRegisterRequest $request): Response | JsonResponse
 	{
 		//create user
 
@@ -113,7 +113,7 @@ class AuthController extends Controller
 		]);
 	}
 
-	public function verificationSend(Request $request): Response
+	public function verificationSend(Request $request): Response | JsonResponse
 	{
 		if ($request->has('email')) {
 			$user = User::where('email', $request->input('email'))->get();
@@ -128,7 +128,7 @@ class AuthController extends Controller
 		return response()->noContent(404);
 	}
 
-	public function forgotPassword(Request $request): Response
+	public function forgotPassword(Request $request): Response | JsonResponse
 	{
 		$status = Password::sendResetLink(
 			$request->only('email')
@@ -168,7 +168,7 @@ class AuthController extends Controller
 		]);
 	}
 
-	public function authCallback(): JsonResponse
+	public function authCallback(): Response | JsonResponse
 	{
 		try {
 			$googleUser = Socialite::driver('google')->user();
