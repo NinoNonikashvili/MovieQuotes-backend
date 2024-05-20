@@ -137,8 +137,10 @@ class AuthController extends Controller
 		return $status === Password::RESET_LINK_SENT
 					? response()->noContent(200)
 					: response()->json([
-						'message' => 'not found ',
-					], 404);
+   auth-test
+						'message' => __('validation.user_doesnt_exist'),
+					]);
+
 	}
 
 	public function resetPassword(Request $request): Response
@@ -187,21 +189,6 @@ class AuthController extends Controller
 			]
 		);
 		auth()->login($user);
-		// check if they're an existing user
-		// $existing = User::where('email', $user->email)->first();
-		// if ($existing) {
-		// 	// log the user in
-		// 	auth()->login($existing);
-		// } else {
-		// 	// create a new user
-		// 	$newUser = new User;
-		// 	$newUser->name = 'user';
-		// 	$newUser->email = $user->email;
-		// 	$newUser->google_id = $user->id;
-		// 	$newUser->email_verified_at = Carbon::now();
-		// 	$newUser->save();
-		// 	auth()->login($newUser);
-		// }
 
 		return response()->json([
 			'user' => auth()->user(),

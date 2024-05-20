@@ -18,10 +18,10 @@ class EnsureExists
 	{
 		$key = $request->has('email') ? 'email' : ($request->has('name') ? 'name' : '');
 
-        // return response()->json([
-        //     'message_key' => $key,
-        //     'message'     => 'user does not exist ',
-        // ], 404);
+		// return response()->json([
+		//     'message_key' => $key,
+		//     'message'     => 'user does not exist ',
+		// ], 404);
 
 		if ($key) {
 			$user = User::where($key, $request->input($key))->get();
@@ -29,7 +29,7 @@ class EnsureExists
 			if (!count($user)) {
 				return response()->json([
 					'message_key' => 'USER_DOESNT_EXIST',
-					'message'     => 'user does not exist ',
+					'message'     => __('validation.user_doesnt_exist'),
 				], 404);
 			}
 		}

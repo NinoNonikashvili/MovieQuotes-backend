@@ -159,6 +159,7 @@ return [
 	'ulid'        => 'The :attribute field must be a valid ULID.',
 	'uuid'        => 'The :attribute field must be a valid UUID.',
 	'gmail_login' => 'Try login using gmail',
+	'user_doesnt_exist' => 'User does not exist',
 
 	/*
 	|--------------------------------------------------------------------------
