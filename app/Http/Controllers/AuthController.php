@@ -85,9 +85,9 @@ class AuthController extends Controller
 	{
 		Auth::logout();
 
-		$request->session()->invalidate();
+		// $request->session()->invalidate();
 
-		$request->session()->regenerateToken();
+		// $request->session()->regenerateToken();
 		return response()->noContent();
 	}
 
@@ -138,7 +138,7 @@ class AuthController extends Controller
 					? response()->noContent(200)
 					: response()->json([
 						'message' => __('validation.user_doesnt_exist'),
-					]);
+					], 404);
 	}
 
 	public function resetPassword(Request $request): Response
