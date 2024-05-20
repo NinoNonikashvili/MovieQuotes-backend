@@ -137,8 +137,10 @@ class AuthController extends Controller
 		return $status === Password::RESET_LINK_SENT
 					? response()->noContent(200)
 					: response()->json([
+   auth-test
 						'message' => __('validation.user_doesnt_exist'),
 					]);
+
 	}
 
 	public function resetPassword(Request $request): Response
