@@ -138,7 +138,7 @@ class AuthController extends Controller
 					? response()->noContent(200)
 					: response()->json([
 						'message' => 'not found ',
-					]);
+					], 404);
 	}
 
 	public function resetPassword(Request $request): Response
