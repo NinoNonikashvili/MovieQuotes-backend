@@ -18,7 +18,7 @@ Route::middleware('lang')->group(function () {
 		Route::post('/email/verification-notification', 'verificationSend')->middleware(['throttle:6,1'])->name('verification.send');
 		Route::get('/check-auth', 'checkAuth')->name('check_auth_state');
 
-		Route::get('/auth/redirect', 'authRedirect');
-		Route::get('/auth/callback', 'authCallback');
+		Route::get('/auth/redirect', 'authRedirect')->name('auth.redirect');
+		Route::get('/auth/callback', 'authCallback')->name('auth.callback');
 	});
 });
