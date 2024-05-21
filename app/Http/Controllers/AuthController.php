@@ -139,6 +139,7 @@ class AuthController extends Controller
 					: response()->json([
 						'message' => __('validation.user_doesnt_exist'),
 					], 404);
+
 	}
 
 	public function resetPassword(Request $request): Response
