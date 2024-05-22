@@ -85,9 +85,9 @@ class AuthController extends Controller
 	{
 		Auth::logout();
 
-		// $request->session()->invalidate();
+		$request->session()->invalidate();
 
-		// $request->session()->regenerateToken();
+		$request->session()->regenerateToken();
 		return response()->noContent();
 	}
 
@@ -137,9 +137,8 @@ class AuthController extends Controller
 		return $status === Password::RESET_LINK_SENT
 					? response()->noContent(200)
 					: response()->json([
-						'message' => __('validation.user_doesnt_exist'),
-					], 404);
-
+						'message' => 'not found ',
+					]);
 	}
 
 	public function resetPassword(Request $request): Response
@@ -188,6 +187,7 @@ class AuthController extends Controller
 			]
 		);
 		auth()->login($user);
+
 
 		return response()->json([
 			'user' => auth()->user(),
