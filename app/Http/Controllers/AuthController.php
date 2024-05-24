@@ -40,6 +40,9 @@ class AuthController extends Controller
 		if ($user) {
 			//send verification email
 			event(new Registered($user));
+			$user->addMedia(public_path('media/default/default.jpg'))
+				->preservingOriginal()
+				->toMediaCollection();
 			return response()->json([
 				'message_key' => 'USER_REGISTERED_SUCCESSFULLY',
 				'data'        => [

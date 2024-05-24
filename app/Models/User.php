@@ -10,11 +10,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\QueuedVerifyEmail;
 use App\Notifications\QueuedResetPassword;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, HasMedia
 {
 	use HasFactory;
-
+	use InteractsWithMedia;
 	use Notifiable;
 
 	/**
