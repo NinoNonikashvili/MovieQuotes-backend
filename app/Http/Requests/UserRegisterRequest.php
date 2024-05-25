@@ -14,7 +14,7 @@ class UserRegisterRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'name'                  => 'required|unique:users|min:3|max:15|regex:/^[a-z0-9]*$/',
+			'name'                  => 'required|min:3|max:15|regex:/^[a-z0-9]*$/',
 			'email'                 => 'required|unique:users|email',
 			'password'              => 'required|min:8|max:15|regex:/^[a-z0-9]*$/',
 			'password_confirmation' => 'required|same:password',
