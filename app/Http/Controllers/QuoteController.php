@@ -17,6 +17,8 @@ class QuoteController extends Controller
 	public function index()
 	{
 		$quotes = QueryBuilder::for(Quote::class)
+
+		->with(['notifications', 'movie'])
 		->defaultSort('created_at')
 		->get();
 		return response()->json([

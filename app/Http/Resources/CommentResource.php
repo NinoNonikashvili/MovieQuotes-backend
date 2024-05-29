@@ -15,7 +15,7 @@ class CommentResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'comment_author_name' => $this->whenLoaded('user')->name,
+			'comment_author_name' => $this->user->name,
 			'comment_author_image'=> $this->whenLoaded('user')->getFirstMediaUrl('users'),
 			'comment_text'        => $this->comment,
 		];

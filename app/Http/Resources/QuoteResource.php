@@ -17,16 +17,17 @@ class QuoteResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'author_avatar'   => $this->movie->user->getFirstMediaUrl('users'),
+			'author_avatar'   => $this->whenLoaded('movie')->user->getFirstMediaUrl('users'),
 			'user_avatar'     => User::find(Auth::user()->id)->getFirstMediaUrl('users'),
 			'author_name'     => $this->movie->user->name,
 			'quote_text'      => $this->quote,
 			'quote_image'     => $this->getFirstMediaUrl('quotes'),
 			'quote_year'      => $this->whenLoaded('movie')->year,
 			'quote_director'  => $this->whenLoaded('movie')->director,
+			'not'             => $this->whenLoaded('notifications'),
 			'comment_number'  => $this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('quote_id', $this->id)
-										->where('type', 'comments')
+										->where('type', 'comment')
 										->count();
 			}),
 			'react_number'=> $this->whenLoaded('notifications', function ($notifications) {
@@ -35,8 +36,7 @@ class QuoteResource extends JsonResource
 									->count();
 			}),
 			'comments'=> CommentResource::collection($this->whenLoaded('notifications', function ($notifications) {
-				return $notifications->where('type', 'comments')
-				->where('quote_id', $this->id);
+				return $notifications->where('type', 'comment');
 			})),
 		];
 	}
