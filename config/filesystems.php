@@ -34,6 +34,16 @@ return [
             'root' => public_path('media'),
             'url' => env('APP_URL').'/media',
         ],
+        'quotes' => [
+            'driver' => 'local',
+            'root' => public_path('media/quotes'),
+            'url' => env('APP_URL').'/media/quotes',
+        ],
+        'users' => [
+            'driver' => 'local',
+            'root' => public_path('media/users'),
+            'url' => env('APP_URL').'/media/users',
+        ],
 
         'local' => [
             'driver' => 'local',

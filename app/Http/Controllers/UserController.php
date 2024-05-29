@@ -27,7 +27,7 @@ class UserController extends Controller
 				$oldAvatar->delete();
 			}
 			$user->addMediaFromRequest('image')
-			->toMediaCollection();
+			->toMediaCollection('users');
 		}
 		$user->save();
 		return response()->noContent();

@@ -40,9 +40,9 @@ class AuthController extends Controller
 		if ($user) {
 			//send verification email
 			event(new Registered($user));
-			$user->addMedia(public_path('media/default/default.jpg'))
+			$user->addMedia(public_path('media/default/default.jpeg'))
 				->preservingOriginal()
-				->toMediaCollection();
+				->toMediaCollection('users');
 			return response()->json([
 				'message_key' => 'USER_REGISTERED_SUCCESSFULLY',
 				'data'        => [
@@ -189,11 +189,19 @@ class AuthController extends Controller
 				'email_verified_at' => now(),
 			]
 		);
+		if ($googleUser->avatar) {
+			$user->addMediaFromUrl($googleUser->avatar)->toMediaCollection('users');
+		}else{
+			$user->addMedia(public_path('media/default/default.jpeg'))
+			->preservingOriginal()
+			->toMediaCollection('users');
+		}
+		
 		auth()->login($user);
 
-
+		
 		return response()->json([
-			'user' => auth()->user(),
+			'user_data'     => new UserResource(auth()->user()),
 		]);
 	}
 }
