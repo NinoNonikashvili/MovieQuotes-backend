@@ -10,13 +10,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\QueuedVerifyEmail;
 use App\Notifications\QueuedResetPassword;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements MustVerifyEmail, HasMedia
 {
 	use HasFactory;
+
 	use InteractsWithMedia;
+
 	use Notifiable;
 
 	/**
@@ -58,15 +62,31 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
 	{
 		$this->notify(new QueuedVerifyEmail);
 	}
+
 	public function sendPasswordResetNotification($token)
-    {
-        $this->notify(new QueuedResetPassword($token));
-    }
+	{
+		$this->notify(new QueuedResetPassword($token));
+	}
 
 	public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('users')
+	{
+		$this->addMediaCollection('users')
 		->useDisk('users')
-		->singleFile();  
-    }
+		->singleFile();
+	}
+
+	public function notifications(): HasMany
+	{
+		return $this->hasMany(Notification::class);
+	}
+
+	public function movies(): HasMany
+	{
+		return $this->hasMany(Movie::class);
+	}
+
+	public function quotes(): HasManyThrough
+	{
+		return $this->hasManyThrough(Quote::class, Movie::class);
+	}
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\QuoteRequest;
+use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class QuoteController extends Controller
 {
@@ -14,12 +16,18 @@ class QuoteController extends Controller
 	 */
 	public function index()
 	{
+		$quotes = QueryBuilder::for(Quote::class)
+		->defaultSort('created_at')
+		->get();
+		return response()->json([
+			'quotes' => QuoteResource::collection($quotes),
+		]);
 	}
 
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(QuoteRequest $request) :Response
+	public function store(QuoteRequest $request): Response
 	{
 		$quote = Quote::create([
 			'quote' => [
