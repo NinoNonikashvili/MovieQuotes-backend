@@ -62,4 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
     {
         $this->notify(new QueuedResetPassword($token));
     }
+
+	public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('users')
+		->useDisk('users')
+		->singleFile();  
+    }
 }

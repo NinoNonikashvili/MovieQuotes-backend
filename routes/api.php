@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
 
 Route::middleware('lang')->group(function () {
 	Route::controller(AuthController::class)->group(function () {
@@ -24,5 +25,13 @@ Route::middleware('lang')->group(function () {
 	});
 	Route::post('/update-profile', [UserController::class, 'update'])->middleware(['auth']);
 	Route::get('/updated-user', [UserController::class, 'show'])->middleware((['auth']));
-});
 
+	Route::middleware('auth:sanctum')->group(function () {
+		Route::controller(MovieController::class)->group(function () {
+			Route::get('/movies', 'index')->name('get-movies');
+		});
+		Route::controller(QuoteController::class)->group(function () {
+			Route::post('/store-quote', 'store')->name('store-quote');
+		});
+	});
+});
