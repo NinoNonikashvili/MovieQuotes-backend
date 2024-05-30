@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuoteRequest;
 use App\Http\Resources\QuoteResource;
+use App\Http\Resources\QuoteSingleMovieResource;
 use App\Models\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Http\JsonResponse;
 
 class QuoteController extends Controller
 {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index(): JsonResponse
 	{
 		$quotes = QueryBuilder::for(Quote::class)
 
@@ -23,6 +25,18 @@ class QuoteController extends Controller
 		->get();
 		return response()->json([
 			'quotes' => QuoteResource::collection($quotes),
+		]);
+	}
+
+	public function singleMovieQuotes(Request $request)
+	{
+		$quotes = QueryBuilder::for(Quote::class)
+		->with(['notifications'])
+		->defaultSort('created_at')
+		->where('movie_id', $request->input('id'))
+		->get();
+		return response()->json([
+			'quotes' => QuoteSingleMovieResource::collection($quotes),
 		]);
 	}
 

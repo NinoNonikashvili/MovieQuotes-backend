@@ -21,6 +21,7 @@ class MovieResource extends JsonResource
 			'year'        => $this->year,
 			'director'    => $this->director,
 			'genres'      => GenreResource::collection($this->genres),
+			'quote_num'   => $this->quotes->count(),
 		];
 	}
 }

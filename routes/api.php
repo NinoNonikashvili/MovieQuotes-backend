@@ -33,6 +33,7 @@ Route::middleware('lang')->group(function () {
 		Route::controller(QuoteController::class)->group(function () {
 			Route::post('/store-quote', 'store')->name('store-quote');
 			Route::get('quotes', 'index')->name('get-quotes');
+			Route::post('single-movie-quotes', 'singleMovieQuotes')->name('single-movie-quotes');
 		});
 	});
 });
