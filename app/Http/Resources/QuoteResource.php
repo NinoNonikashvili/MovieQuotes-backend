@@ -24,7 +24,6 @@ class QuoteResource extends JsonResource
 			'quote_image'     => $this->getFirstMediaUrl('quotes'),
 			'quote_year'      => $this->whenLoaded('movie')->year,
 			'quote_director'  => $this->whenLoaded('movie')->director,
-			'not'             => $this->whenLoaded('notifications'),
 			'comment_number'  => $this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('quote_id', $this->id)
 										->where('type', 'comment')

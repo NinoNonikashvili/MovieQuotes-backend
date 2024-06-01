@@ -29,11 +29,14 @@ Route::middleware('lang')->group(function () {
 	Route::middleware('auth:sanctum')->group(function () {
 		Route::controller(MovieController::class)->group(function () {
 			Route::get('/movies', 'index')->name('get-movies');
+			Route::get('/genres', 'getGenres')->name('get-genres');
+			Route::post('/add-movie', 'store')->name('add-movie');
 		});
 		Route::controller(QuoteController::class)->group(function () {
 			Route::post('/store-quote', 'store')->name('store-quote');
 			Route::get('quotes', 'index')->name('get-quotes');
 			Route::post('single-movie-quotes', 'singleMovieQuotes')->name('single-movie-quotes');
 		});
+		
 	});
 });

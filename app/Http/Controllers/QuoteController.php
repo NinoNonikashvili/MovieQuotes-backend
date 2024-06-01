@@ -21,7 +21,7 @@ class QuoteController extends Controller
 		$quotes = QueryBuilder::for(Quote::class)
 
 		->with(['notifications', 'movie'])
-		->defaultSort('created_at')
+		->orderBy('created_at', 'desc')
 		->get();
 		return response()->json([
 			'quotes' => QuoteResource::collection($quotes),
@@ -32,7 +32,7 @@ class QuoteController extends Controller
 	{
 		$quotes = QueryBuilder::for(Quote::class)
 		->with(['notifications'])
-		->defaultSort('created_at')
+		->orderBy('created_at', 'desc')
 		->where('movie_id', $request->input('id'))
 		->get();
 		return response()->json([
