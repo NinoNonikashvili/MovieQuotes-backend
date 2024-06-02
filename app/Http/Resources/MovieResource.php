@@ -22,6 +22,7 @@ class MovieResource extends JsonResource
 			'director'    => $this->director,
 			'genres'      => GenreResource::collection($this->genres),
 			'quote_num'   => $this->quotes->count(),
+			'image'       => $this->getFirstMediaUrl('images'),
 		];
 	}
 }

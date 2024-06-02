@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MovieRequest;
 use App\Http\Resources\GenreResource;
+use App\Http\Resources\MovieBilingualResource;
 use App\Http\Resources\MovieResource;
 use App\Models\Genre;
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -53,8 +55,8 @@ class MovieController extends Controller
 			'year'   => $request->input('year'),
 			'user_id'=> $request->input('user_id'),
 		]);
-		if($movie){
-			$movie->addMediaFromRequest('image')->toMediaCollection('movies');
+		if ($movie) {
+			$movie->addMediaFromRequest('image')->toMediaCollection('images');
 		}
 		$movie->genres()->attach($request->input('genre'));
 		return response()->noContent();
@@ -65,13 +67,9 @@ class MovieController extends Controller
 	 */
 	public function show(Movie $movie)
 	{
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 */
-	public function edit(Movie $movie)
-	{
+		return response()->json([
+			'data' => new MovieBilingualResource($movie),
+		]);
 	}
 
 	/**
@@ -79,12 +77,47 @@ class MovieController extends Controller
 	 */
 	public function update(Request $request, Movie $movie)
 	{
+		if ($request->has('name_en')) {
+			$movie->setTranslation('title', 'en', $request->input('name_en'));
+		}
+		if ($request->has('name_ge')) {
+			$movie->setTranslation('title', 'ge', $request->input('name_ge'));
+		}
+		if ($request->has('director_en')) {
+			$movie->setTranslation('director', 'en', $request->input('director_en'));
+		}
+		if ($request->has('director_ge')) {
+			$movie->setTranslation('director', 'ge', $request->input('director_ge'));
+		}
+		if ($request->has('description_en')) {
+			$movie->setTranslation('description', 'en', $request->input('description_en'));
+		}
+		if ($request->has('description_ge')) {
+			$movie->setTranslation('description', 'ge', $request->input('description_ge'));
+		}
+		if ($request->has('year')) {
+			$movie->year = $request->input('year');
+		}
+		if ($request->has('image')) {
+			if ($media = $movie->getFirstMedia('images')) {
+				$media->delete();
+			}
+			$movie->addMediaFromRequest('image')->toMediaCollection('images');
+		}
+		$movie->save();
+
+		return response()->noContent();
 	}
 
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Movie $movie)
+	public function destroy(Movie $movie): Response
 	{
+		$movie->delete();
+		if ($media = $movie->getFirstMedia('images')) {
+			$media->delete();
+		}
+		return response()->noContent();
 	}
 }
