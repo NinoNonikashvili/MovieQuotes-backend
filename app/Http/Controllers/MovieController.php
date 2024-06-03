@@ -8,6 +8,7 @@ use App\Http\Resources\MovieBilingualResource;
 use App\Http\Resources\MovieResource;
 use App\Models\Genre;
 use App\Models\Movie;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -18,26 +19,30 @@ class MovieController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index():JsonResponse
 	{
 		$movies = QueryBuilder::for(Movie::class)
 		->where('user_id', Auth::id())
 		->defaultSort('-created_at')
 		->get();
-		return MovieResource::collection($movies);
+		return response()->json([
+			'data' => MovieResource::collection($movies)
+		]);
 	}
 
-	public function getGenres()
+	public function getGenres():JsonResponse
 	{
 		$genres = QueryBuilder::for(Genre::class)
 		->get();
-		return GenreResource::collection($genres);
+		return response()->json([
+			'data'=> GenreResource::collection($genres),
+		]);
 	}
 
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(MovieRequest $request)
+	public function store(MovieRequest $request): Response
 	{
 		$movie = Movie::create([
 			'title' => [
@@ -65,7 +70,7 @@ class MovieController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Movie $movie)
+	public function show(Movie $movie): JsonResponse
 	{
 		return response()->json([
 			'data' => new MovieBilingualResource($movie),
@@ -75,7 +80,7 @@ class MovieController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Request $request, Movie $movie)
+	public function update(Request $request, Movie $movie): Response
 	{
 		if ($request->has('name_en')) {
 			$movie->setTranslation('title', 'en', $request->input('name_en'));
@@ -114,10 +119,10 @@ class MovieController extends Controller
 	 */
 	public function destroy(Movie $movie): Response
 	{
-		$movie->delete();
 		if ($media = $movie->getFirstMedia('images')) {
 			$media->delete();
 		}
+		$movie->delete();
 		return response()->noContent();
 	}
 }

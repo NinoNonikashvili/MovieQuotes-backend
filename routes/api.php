@@ -39,6 +39,10 @@ Route::middleware('lang')->group(function () {
 			Route::post('/store-quote', 'store')->name('store-quote');
 			Route::get('quotes', 'index')->name('get-quotes');
 			Route::post('single-movie-quotes', 'singleMovieQuotes')->name('single-movie-quotes');
+			Route::get('comments/{quote}', 'getComments')->name('get-quote-comments');
+			Route::get('/delete-quote/{quote}', 'destroy')->name('delete-quote');
+			Route::post('/update-quote/{quote}', 'update')->name('update-quote');
+			Route::get('/quotes/{quote}', 'show')->name('get-single-quote');
 		});
 	});
 });
