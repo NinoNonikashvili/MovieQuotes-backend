@@ -24,7 +24,7 @@ class NotificationFactory extends Factory
 			'quote_id'=> 1,
 			'user_id' => 1,
 			'type'    => $type,
-			'comment' => $type === 'comment' ? ['en' => $this->faker->sentence(), 'ge' => GeorgianFactory::create('ka_GE')->realText(15)] : null,
+			'comment' => $type === 'comment' ? $this->faker->sentence() : null,
 			'seen'    => false,
 		];
 	}

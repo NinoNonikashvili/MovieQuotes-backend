@@ -21,7 +21,7 @@ class QuoteResource extends JsonResource
 			'user_avatar'     => User::find(Auth::user()->id)->getFirstMediaUrl('users'),
 			'author_name'     => $this->movie->user->name,
 			'quote_text'      => $this->quote,
-			'quote_image'     => $this->getFirstMediaUrl('quotes'),
+			'quote_image'     => $this->getFirstMediaUrl('images'),
 			'quote_year'      => $this->whenLoaded('movie')->year,
 			'quote_director'  => $this->whenLoaded('movie')->director,
 			'comment_number'  => $this->whenLoaded('notifications', function ($notifications) {
