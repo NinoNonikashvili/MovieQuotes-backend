@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\QueuedVerifyEmail;
 use App\Notifications\QueuedResetPassword;
+use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Spatie\MediaLibrary\HasMedia;
@@ -22,6 +23,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
 	use InteractsWithMedia;
 
 	use Notifiable;
+
+	// use BroadcastsEvents;
 
 	/**
 	 * The attributes that are mass assignable.
@@ -89,4 +92,9 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
 	{
 		return $this->hasManyThrough(Quote::class, Movie::class);
 	}
+
+	// public function broadcastOn(string $event): array
+	// {
+	// 	return [$this, $this->user];
+	// }
 }

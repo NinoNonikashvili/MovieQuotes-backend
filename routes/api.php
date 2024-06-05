@@ -1,9 +1,11 @@
 <?php
 
+use App\Events\NotificationUpdated;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('lang')->group(function () {
@@ -43,6 +45,12 @@ Route::middleware('lang')->group(function () {
 			Route::get('/delete-quote/{quote}', 'destroy')->name('delete-quote');
 			Route::post('/update-quote/{quote}', 'update')->name('update-quote');
 			Route::get('/quotes/{quote}', 'show')->name('get-single-quote');
+			Route::post('/add-quote-notification', 'addQuoteNotification')->name('add-quote-notification');
+			Route::post('/remove-quote-heart', 'removeQuoteHeart')->name('remove-quote-heart');
 		});
 	});
+});
+
+Route::get('test', function () {
+	return event(new NotificationUpdated(Notification::first()));
 });
