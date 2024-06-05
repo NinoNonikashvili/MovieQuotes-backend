@@ -17,6 +17,7 @@ class QuoteResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
+			'quote_id'        => $this->id,
 			'author_avatar'   => $this->whenLoaded('movie')->user->getFirstMediaUrl('users'),
 			'user_avatar'     => User::find(Auth::user()->id)->getFirstMediaUrl('users'),
 			'author_name'     => $this->movie->user->name,
@@ -37,6 +38,9 @@ class QuoteResource extends JsonResource
 			'comments'=> CommentResource::collection($this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('type', 'comment');
 			})),
+			'has_user_loved' => $this->whenLoaded('notifications', function ($notifications) {
+				return (bool)count($notifications->where('user_id', Auth::user()->id)->where('type', 'heart'));
+			}),
 		];
 	}
 }

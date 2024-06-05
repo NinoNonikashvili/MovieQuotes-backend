@@ -23,8 +23,13 @@ class AuthController extends Controller
 {
 	public function checkAuth(): JsonResponse
 	{
+		if (auth()->user()) {
+			return response()->json([
+				'user' => new UserResource(auth()->user()),
+			]);
+		}
 		return response()->json([
-			'user' => auth()->user(),
+			'user' => null,
 		]);
 	}
 
@@ -191,15 +196,14 @@ class AuthController extends Controller
 		);
 		if ($googleUser->avatar) {
 			$user->addMediaFromUrl($googleUser->avatar)->toMediaCollection('users');
-		}else{
+		} else {
 			$user->addMedia(public_path('media/default/default.jpeg'))
 			->preservingOriginal()
 			->toMediaCollection('users');
 		}
-		
+
 		auth()->login($user);
 
-		
 		return response()->json([
 			'user_data'     => new UserResource(auth()->user()),
 		]);

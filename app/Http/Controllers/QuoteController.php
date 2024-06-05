@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationUpdated;
+use App\Http\Requests\AddNotificationRequest;
 use App\Http\Requests\QuoteRequest;
+use App\Http\Requests\RemoveHeartRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\QuoteResourceBilingual;
 use App\Http\Resources\QuoteSingleMovieResource;
+use App\Models\Notification;
 use App\Models\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,13 +28,14 @@ class QuoteController extends Controller
 
 		->with(['notifications', 'movie'])
 		->orderBy('created_at', 'desc')
-		->get();
+		->cursorPaginate(4);
 		return response()->json([
-			'quotes' => QuoteResource::collection($quotes),
+			'quotes'   => QuoteResource::collection($quotes),
+			'next_url' => $quotes->nextPageUrl(),
 		]);
 	}
 
-	public function singleMovieQuotes(Request $request):JsonResponse
+	public function singleMovieQuotes(Request $request): JsonResponse
 	{
 		$quotes = QueryBuilder::for(Quote::class)
 		->with(['notifications'])
@@ -60,21 +65,21 @@ class QuoteController extends Controller
 		return response()->noContent();
 	}
 
-	public function comments(Quote $quote):JsonResponse
+	public function comments(Quote $quote): JsonResponse
 	{
 		$comments = $quote->notifications()->where('type', 'comment');
 		return response()->json([
-			'data' => CommentResource::collection($comments)
+			'data' => CommentResource::collection($comments),
 		]);
 	}
 
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Quote $quote):JsonResponse
+	public function show(Quote $quote): JsonResponse
 	{
 		return response()->json([
-			'data' => new QuoteResourceBilingual($quote)
+			'data' => new QuoteResourceBilingual($quote),
 		]);
 	}
 
@@ -83,14 +88,14 @@ class QuoteController extends Controller
 	 */
 	public function update(Request $request, Quote $quote): Response
 	{
-		if($request->has('quote_en')){
+		if ($request->has('quote_en')) {
 			$quote->settTanslation('quote', 'en', $request->input('quote_en'));
 		}
-		if($request->has('quote_ge')){
+		if ($request->has('quote_ge')) {
 			$quote->setTranslation('quote', 'ge', $request->input('quote_ge'));
 		}
-		if($request->has('image')){
-			if($media = $quote->getFirstMedia('images')){
+		if ($request->has('image')) {
+			if ($media = $quote->getFirstMedia('images')) {
 				$media->delete();
 			}
 			$quote->addMediaFromRequest('image')->toMediaCollection('images');
@@ -102,13 +107,30 @@ class QuoteController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Quote $quote):Response
+	public function destroy(Quote $quote): Response
 	{
-		if($media = $quote->getFirstMedia('images')){
+		if ($media = $quote->getFirstMedia('images')) {
 			$media->delete();
 		}
 		$quote->delete();
-		
+
+		return response()->noContent();
+	}
+
+	public function addQuoteNotification(AddNotificationRequest $request): Response
+	{
+		$notification = Notification::create($request->validated());
+		event(new NotificationUpdated($notification));
+		return response()->noContent();
+	}
+
+	public function removeQuoteHeart(RemoveHeartRequest $request): Response
+	{
+		$notification = Notification::where('user_id', $request->input('user_id'))
+		->where('quote_id', $request->input('quote_id'))
+		->where('type', 'heart')->get();
+		event(new NotificationUpdated($notification[0]));
+		$notification->delete();
 		return response()->noContent();
 	}
 }
