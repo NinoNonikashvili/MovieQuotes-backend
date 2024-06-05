@@ -14,7 +14,7 @@ jobs:
       - name: copy env file
         run: cp .env.example .env
       - name: install npm dependencies
-        run: npm ci
+        run: npm install
       - name: run linter
         run: npm run lint
       - name: Set ssh key 
