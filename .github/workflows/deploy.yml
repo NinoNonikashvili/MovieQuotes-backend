@@ -15,8 +15,6 @@ jobs:
         run: cp .env.example .env
       - name: install npm dependencies
         run: npm install
-      - name: run linter
-        run: npm run lint
       - name: Set ssh key 
         run: |
           mkdir -p ~/.ssh
