@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationUpdated;
 use App\Http\Requests\AddNotificationRequest;
 use App\Http\Requests\QuoteRequest;
 use App\Http\Requests\RemoveHeartRequest;
@@ -117,7 +118,8 @@ class QuoteController extends Controller
 
 	public function addQuoteNotification(AddNotificationRequest $request): Response
 	{
-		Notification::create($request->validated());
+		$notification = Notification::create($request->validated());
+		event(new NotificationUpdated($notification));
 		return response()->noContent();
 	}
 
@@ -126,6 +128,7 @@ class QuoteController extends Controller
 		$notification = Notification::where('user_id', $request->input('user_id'))
 		->where('quote_id', $request->input('quote_id'))
 		->where('type', 'heart')->get();
+		event(new NotificationUpdated($notification[0]));
 		$notification->delete();
 		return response()->noContent();
 	}

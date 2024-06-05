@@ -51,6 +51,6 @@ Route::middleware('lang')->group(function () {
 	});
 });
 
-Route::get('test', function () {
-	return event(new NotificationUpdated(Notification::first()));
-});
+// Route::get('test', function () {
+// 	return event(new NotificationUpdated(Notification::first()));
+// });
