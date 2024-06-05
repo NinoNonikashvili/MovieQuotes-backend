@@ -17,6 +17,7 @@ class AddNotificationRequest extends FormRequest
 			'quote_id'=> 'required',
 			'user_id' => 'required',
 			'type'    => 'required',
+			'comment' => "exclude_if:type,heart|required"
 		];
 	}
 }

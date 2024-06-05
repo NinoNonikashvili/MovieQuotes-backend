@@ -28,9 +28,10 @@ class QuoteController extends Controller
 
 		->with(['notifications', 'movie'])
 		->orderBy('created_at', 'desc')
-		->get();
+		->cursorPaginate(4);
 		return response()->json([
-			'quotes' => QuoteResource::collection($quotes),
+			'quotes'   => QuoteResource::collection($quotes),
+			'next_url' => $quotes->nextPageUrl(),
 		]);
 	}
 
