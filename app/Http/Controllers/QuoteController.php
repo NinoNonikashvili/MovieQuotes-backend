@@ -25,9 +25,7 @@ class QuoteController extends Controller
 	public function index(): JsonResponse
 	{
 		$quotes = QueryBuilder::for(Quote::class)
-
 		->with(['notifications', 'movie'])
-		->orderBy('created_at', 'desc')
 		->cursorPaginate(4);
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
@@ -120,7 +118,19 @@ class QuoteController extends Controller
 	public function addQuoteNotification(AddNotificationRequest $request): Response
 	{
 		$notification = Notification::create($request->validated());
-		event(new NotificationUpdated($notification));
+		$id = $notification->id;
+		$notification_author = $notification->user;
+		$quote_author = $notification->quote->movie->user;
+		$type = $notification->type;
+		$comment = $notification->comment;
+		event(new NotificationUpdated(
+			$id,
+			$notification_author,
+			$quote_author,
+			$type,
+			'add',
+			$comment
+		));
 		return response()->noContent();
 	}
 
@@ -129,8 +139,19 @@ class QuoteController extends Controller
 		$notification = Notification::where('user_id', $request->input('user_id'))
 		->where('quote_id', $request->input('quote_id'))
 		->where('type', 'heart')->get();
-		event(new NotificationUpdated($notification[0]));
-		$notification->delete();
+		$id = $notification[0]->id;
+		$notification_author = $notification[0]->user;
+		$quote_author = $notification[0]->quote->movie->user;
+
+		event(new NotificationUpdated(
+			$id,
+			$notification_author,
+			$quote_author,
+			'heart',
+			'delete',
+			null
+		));
+		$notification[0]->delete();
 		return response()->noContent();
 	}
 }

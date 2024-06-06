@@ -19,18 +19,18 @@ class MovieController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index():JsonResponse
+	public function index(): JsonResponse
 	{
 		$movies = QueryBuilder::for(Movie::class)
 		->where('user_id', Auth::id())
-		->defaultSort('-created_at')
-		->get();
+		->cursorPaginate(2);
 		return response()->json([
-			'data' => MovieResource::collection($movies)
+			'data'     => MovieResource::collection($movies),
+			'next_url' => $movies->nextPageUrl(),
 		]);
 	}
 
-	public function getGenres():JsonResponse
+	public function getGenres(): JsonResponse
 	{
 		$genres = QueryBuilder::for(Genre::class)
 		->get();
