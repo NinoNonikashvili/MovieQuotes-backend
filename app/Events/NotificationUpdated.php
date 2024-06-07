@@ -2,9 +2,8 @@
 
 namespace App\Events;
 
-use App\Models\Notification;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -16,8 +15,16 @@ class NotificationUpdated implements ShouldBroadcast
 	/**
 	 * Create a new event instance.
 	 */
-	public function __construct(public Notification $notification)
-	{
+	public function __construct(
+		public $quote_id,
+		public $not_id,
+		public $user_name,
+		public $user_image,
+		public $type,
+		public $created_at,
+		public $seen,
+		public $channel
+	) {
 	}
 
 	/**
@@ -27,7 +34,7 @@ class NotificationUpdated implements ShouldBroadcast
 	 */
 	public function broadcastOn()
 	{
-		return new PrivateChannel('notification' . $this->notification->quote->movie->user_id);
+		return new Channel('notification' . $this->channel);
 	}
 
 	public function broadcastAs()
@@ -37,6 +44,14 @@ class NotificationUpdated implements ShouldBroadcast
 
 	public function broadcastWith()
 	{
-		return ['message' => $this->notification];
+		return [
+			'quote_id'                         => $this->quote_id,
+			'notification_id'                  => $this->not_id,
+			'notification_author_name'         => $this->user_name,
+			'notification_author_image'        => $this->user_image,
+			'action'                           => $this->type,
+			'create_at'                        => $this->created_at,
+			'seen'                             => $this->seen,
+		];
 	}
 }

@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Events\NotificationUpdated;
 use App\Http\Requests\AddNotificationRequest;
 use App\Http\Requests\QuoteRequest;
-use App\Http\Requests\RemoveHeartRequest;
 use App\Http\Resources\CommentResource;
+use App\Http\Resources\QuoteNotificationResource;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\QuoteResourceBilingual;
 use App\Http\Resources\QuoteSingleMovieResource;
 use App\Models\Notification;
 use App\Models\Quote;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -118,40 +119,51 @@ class QuoteController extends Controller
 	public function addQuoteNotification(AddNotificationRequest $request): Response
 	{
 		$notification = Notification::create($request->validated());
-		$id = $notification->id;
-		$notification_author = $notification->user;
-		$quote_author = $notification->quote->movie->user;
-		$type = $notification->type;
-		$comment = $notification->comment;
+		//add row in reactions table
+		$user = User::find(auth()->user()->id);
+		if ($user) {
+			$notification->type === 'react' ? $user->reactedQuotes()->attach($notification->quote_id) : (
+				$notification->type === 'unreact' ? $user->reactedQuotes()->detach($notification->quote_id) : ''
+			);
+		}
+
 		event(new NotificationUpdated(
-			$id,
-			$notification_author,
-			$quote_author,
-			$type,
-			'add',
-			$comment
+			$notification->quote->id,
+			$notification->id,
+			$notification->user->name,
+			User::find($notification->user->id)->getFirstMediaUrl('users'),
+			$notification->type,
+			$notification->created_at,
+			$notification->seen,
+			$notification->quote->movie->user->id,
 		));
 		return response()->noContent();
 	}
 
-	public function removeQuoteHeart(RemoveHeartRequest $request): Response
+	public function getNotifications()
 	{
-		$notification = Notification::where('user_id', $request->input('user_id'))
-		->where('quote_id', $request->input('quote_id'))
-		->where('type', 'heart')->get();
-		$id = $notification[0]->id;
-		$notification_author = $notification[0]->user;
-		$quote_author = $notification[0]->quote->movie->user;
+		$notifications = Notification::whereHas('quote.movie.user', function ($query) {
+			$query->where('id', auth()->user()->id);
+		})->with(['quote.movie.user'])->orderBy('created_at', 'desc')->get();
 
-		event(new NotificationUpdated(
-			$id,
-			$notification_author,
-			$quote_author,
-			'heart',
-			'delete',
-			null
-		));
-		$notification[0]->delete();
+		return  response()->json([
+			'data'  => QuoteNotificationResource::collection($notifications),
+		]);
+	}
+
+	public function setNotificationSeen(Request $request): Response
+	{
+		if ($request->input('id')) {
+			$not = Notification::find($request->input('id'));
+			$not->seen = true;
+			$not->save();
+		}
+		return response()->noContent();
+	}
+
+	public function setAllNotificationsSeen(): Response
+	{
+		Notification::query()->update(['seen' => true]);
 		return response()->noContent();
 	}
 }

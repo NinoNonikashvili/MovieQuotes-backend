@@ -15,7 +15,7 @@ class NotificationFactory extends Factory
 	 *
 	 * @return array<string, mixed>
 	 */
-	public $types = ['heart', 'comment'];
+	public $types = ['react', 'unreact', 'comment'];
 
 	public function definition(): array
 	{

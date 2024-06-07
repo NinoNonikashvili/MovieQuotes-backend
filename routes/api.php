@@ -1,11 +1,10 @@
 <?php
 
-use App\Events\NotificationUpdated;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
-use App\Models\Notification;
+use App\Models\Quote;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('lang')->group(function () {
@@ -47,10 +46,13 @@ Route::middleware('lang')->group(function () {
 			Route::get('/quotes/{quote}', 'show')->name('get-single-quote');
 			Route::post('/add-quote-notification', 'addQuoteNotification')->name('add-quote-notification');
 			Route::post('/remove-quote-heart', 'removeQuoteHeart')->name('remove-quote-heart');
+			Route::get('/get-notifications', 'getNotifications')->name('get-notifications');
+			Route::post('/set-notification-seen', 'setNotificationSeen')->name('set-notification-seen');
+			Route::get('/set-all-notifications-seen', 'setAllNotificationsSeen')->name('set-all-notifications-seen');
 		});
 	});
 });
 
 // Route::get('test', function () {
-// 	return event(new NotificationUpdated(Notification::first()));
+// 	return Quote::cursorPaginate(2);
 // });

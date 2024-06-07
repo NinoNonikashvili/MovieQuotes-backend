@@ -30,17 +30,12 @@ class QuoteResource extends JsonResource
 										->where('type', 'comment')
 										->count();
 			}),
-			'react_number'=> $this->whenLoaded('notifications', function ($notifications) {
-				return $notifications->where('quote_id', $this->id)
-									->where('type', 'heart')
-									->count();
-			}),
-			'comments'=> CommentResource::collection($this->whenLoaded('notifications', function ($notifications) {
+			'react_number'=> $this->reactors->count(),
+			'comments'    => CommentResource::collection($this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('type', 'comment');
 			})),
-			'has_user_loved' => $this->whenLoaded('notifications', function ($notifications) {
-				return (bool)count($notifications->where('user_id', Auth::user()->id)->where('type', 'heart'));
-			}),
+			'has_user_loved' => $this->reactors()->where('user_id', auth()->user()->id)->exists(),
+			'nots'           => $this->whenLoaded('notifications'),
 		];
 	}
 }

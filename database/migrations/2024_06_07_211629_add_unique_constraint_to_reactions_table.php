@@ -10,14 +10,8 @@ return new class extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::create('movies', function (Blueprint $table) {
-			$table->id();
-			$table->string('title');
-			$table->string('description');
-			$table->string('year');
-			$table->string('director');
-			$table->foreignId('user_id')->constrained()->onDelete('cascade');
-			$table->timestamps();
+		Schema::table('reactions', function (Blueprint $table) {
+			$table->unique(['user_id', 'quote_id']);
 		});
 	}
 
@@ -26,6 +20,7 @@ return new class extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists('movies');
+		Schema::table('reactions', function (Blueprint $table) {
+		});
 	}
 };
