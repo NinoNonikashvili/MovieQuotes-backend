@@ -15,10 +15,10 @@ class QuoteSingleMovieResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'id'              => $this->id,
-			'image'           => $this->getFirstMediaUrl('images'),
-			'quote'           => $this->quote,
-			'comment_number'  => $this->whenLoaded('notifications', function ($notifications) {
+			'id'                    => $this->id,
+			'quote_image'           => $this->getFirstMediaUrl('images'),
+			'quote'                 => $this->quote,
+			'comment_number'        => $this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('quote_id', $this->id)
 										->where('type', 'comment')
 										->count();

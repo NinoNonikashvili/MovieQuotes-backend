@@ -23,11 +23,24 @@ class QuoteController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(): JsonResponse
+	public function index(Request $request): JsonResponse
 	{
-		$quotes = QueryBuilder::for(Quote::class)
-		->with(['notifications', 'movie'])
-		->cursorPaginate(4);
+		if ($request->has('search')) {
+			if ($request->input('search')[0] === '@') {
+				$quotes = Quote::with(['notifications', 'movie'])->whereHas('movie', function ($query) use ($request) {
+					$query->where('title', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
+				})->cursorPaginate(4);
+			} elseif ($request->input('search')[0] === '#') {
+				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%')->cursorPaginate(4);
+			} else {
+				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . $request->input('search') . '%')
+				->orWhereHas('movie', function ($query) use ($request) {
+					$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
+				})->cursorPaginate(4);
+			}
+		} else {
+			$quotes = Quote::with(['notifications', 'movie'])->cursorPaginate(4);
+		}
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
 			'next_url' => $quotes->nextPageUrl(),

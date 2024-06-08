@@ -30,7 +30,8 @@ Route::middleware('lang')->group(function () {
 	Route::middleware('auth:sanctum')->group(function () {
 		Route::controller(MovieController::class)->group(function () {
 			Route::get('/movies', 'index')->name('get-movies');
-			Route::get('/movies/{movie}', 'show')->name('get-single-movie');
+			Route::get('/movies/{movie}', 'show')->name('get-single-movie-billingual');
+			Route::get('movies/single/{movie}', 'single')->name('get-single-movie');
 			Route::get('/genres', 'getGenres')->name('get-genres');
 			Route::post('/add-movie', 'store')->name('add-movie');
 			Route::post('/edit-movie/{movie}', 'update')->name('edit-movie');
