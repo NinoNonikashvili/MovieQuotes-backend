@@ -101,7 +101,7 @@ class QuoteController extends Controller
 	public function update(Request $request, Quote $quote): Response
 	{
 		if ($request->has('quote_en')) {
-			$quote->settTanslation('quote', 'en', $request->input('quote_en'));
+			$quote->setTranslation('quote', 'en', $request->input('quote_en'));
 		}
 		if ($request->has('quote_ge')) {
 			$quote->setTranslation('quote', 'ge', $request->input('quote_ge'));

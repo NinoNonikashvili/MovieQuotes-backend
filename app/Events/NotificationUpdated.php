@@ -44,6 +44,7 @@ class NotificationUpdated implements ShouldBroadcast
 
 	public function broadcastWith()
 	{
+		
 		return [
 			'quote_id'                         => $this->quote_id,
 			'notification_id'                  => $this->not_id,

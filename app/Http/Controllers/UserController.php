@@ -20,7 +20,7 @@ class UserController extends Controller
 			$user->password = bcrypt($password);
 		}
 
-		if ($request->file('image')) {
+		if ($request->has('image')) {
 			$oldAvatar = $user->getFirstMedia();
 
 			if ($oldAvatar) {

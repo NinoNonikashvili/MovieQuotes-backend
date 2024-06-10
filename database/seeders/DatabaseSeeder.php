@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 		User::factory(10)->create();
 
 		Genre::factory(3)->create();
-		Movie::factory(10)->hasAttached(Genre::factory(2))->create(
+		Movie::factory()->hasAttached(Genre::factory(2))->create(
 			['user_id' => 1]
 		);
 		Quote::factory(5)->create();
