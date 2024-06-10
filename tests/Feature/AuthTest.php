@@ -1,11 +1,6 @@
 <?php
 
-/**
- * გუგლით ავტორიზაცია
- * პაროლის აღდგენა
- * დალოგინება
- * დალოგაუთება
- */
+
 use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Notification;

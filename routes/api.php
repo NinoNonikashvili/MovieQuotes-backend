@@ -24,7 +24,7 @@ Route::middleware('lang')->group(function () {
 		Route::get('/auth/redirect', 'authRedirect')->name('auth.redirect');
 		Route::get('/auth/callback', 'authCallback')->name('auth.callback');
 	});
-	Route::post('/update-profile', [UserController::class, 'update'])->middleware(['auth']);
+	Route::post('/update-profile', [UserController::class, 'update'])->middleware(['auth'])->name('update-profile');
 	Route::get('/updated-user', [UserController::class, 'show'])->middleware((['auth']));
 
 	Route::middleware('auth:sanctum')->group(function () {
@@ -54,6 +54,3 @@ Route::middleware('lang')->group(function () {
 	});
 });
 
-// Route::get('test', function () {
-// 	return Quote::cursorPaginate(2);
-// });
