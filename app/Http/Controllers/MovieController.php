@@ -19,18 +19,21 @@ class MovieController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index():JsonResponse
+	public function index(Request $request): JsonResponse
 	{
-		$movies = QueryBuilder::for(Movie::class)
-		->where('user_id', Auth::id())
-		->defaultSort('-created_at')
-		->get();
+		if ($request->has('search')) {
+			$movies = Movie::where('user_id', Auth::id())->where('title', 'LIKE', '%' . $request->input('search') . '%')->cursorPaginate(4);
+		} else {
+			$movies = Movie::where('user_id', Auth::id())
+			->cursorPaginate(4);
+		}
 		return response()->json([
-			'data' => MovieResource::collection($movies)
+			'data'     => MovieResource::collection($movies),
+			'next_url' => $movies->nextPageUrl(),
 		]);
 	}
 
-	public function getGenres():JsonResponse
+	public function getGenres(): JsonResponse
 	{
 		$genres = QueryBuilder::for(Genre::class)
 		->get();
@@ -74,6 +77,11 @@ class MovieController extends Controller
 	{
 		return response()->json([
 			'data' => new MovieBilingualResource($movie),
+		]);
+	}
+	public function single(Movie $movie) : JsonResponse{
+		return response()->json([
+			'data' => new MovieResource($movie),
 		]);
 	}
 

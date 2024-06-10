@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Translatable\HasTranslations;
@@ -34,7 +35,8 @@ class Quote extends Model implements HasMedia
 	{
 		return $this->hasMany(Notification::class);
 	}
-	public function user():BelongsTo
+
+	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class);
 	}
@@ -44,5 +46,10 @@ class Quote extends Model implements HasMedia
 		$this->addMediaCollection('images')
 		->useDisk('quotes')
 		->singleFile();
+	}
+
+	public function reactors(): BelongsToMany
+	{
+		return $this->belongsToMany(User::class, 'reactions');
 	}
 }

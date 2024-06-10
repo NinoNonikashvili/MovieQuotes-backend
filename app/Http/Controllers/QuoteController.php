@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Events\NotificationUpdated;
 use App\Http\Requests\AddNotificationRequest;
 use App\Http\Requests\QuoteRequest;
-use App\Http\Requests\RemoveHeartRequest;
 use App\Http\Resources\CommentResource;
+use App\Http\Resources\QuoteNotificationResource;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\QuoteResourceBilingual;
 use App\Http\Resources\QuoteSingleMovieResource;
 use App\Models\Notification;
 use App\Models\Quote;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -22,13 +23,24 @@ class QuoteController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(): JsonResponse
+	public function index(Request $request): JsonResponse
 	{
-		$quotes = QueryBuilder::for(Quote::class)
-
-		->with(['notifications', 'movie'])
-		->orderBy('created_at', 'desc')
-		->cursorPaginate(4);
+		if ($request->has('search')) {
+			if ($request->input('search')[0] === '@') {
+				$quotes = Quote::with(['notifications', 'movie'])->whereHas('movie', function ($query) use ($request) {
+					$query->where('title', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
+				})->cursorPaginate(4);
+			} elseif ($request->input('search')[0] === '#') {
+				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%')->cursorPaginate(4);
+			} else {
+				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . $request->input('search') . '%')
+				->orWhereHas('movie', function ($query) use ($request) {
+					$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
+				})->cursorPaginate(4);
+			}
+		} else {
+			$quotes = Quote::with(['notifications', 'movie'])->cursorPaginate(4);
+		}
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
 			'next_url' => $quotes->nextPageUrl(),
@@ -120,17 +132,51 @@ class QuoteController extends Controller
 	public function addQuoteNotification(AddNotificationRequest $request): Response
 	{
 		$notification = Notification::create($request->validated());
-		event(new NotificationUpdated($notification));
+		//add row in reactions table
+		$user = User::find(auth()->user()->id);
+		if ($user) {
+			$notification->type === 'react' ? $user->reactedQuotes()->attach($notification->quote_id) : (
+				$notification->type === 'unreact' ? $user->reactedQuotes()->detach($notification->quote_id) : ''
+			);
+		}
+
+		event(new NotificationUpdated(
+			$notification->quote->id,
+			$notification->id,
+			$notification->user->name,
+			User::find($notification->user->id)->getFirstMediaUrl('users'),
+			$notification->type,
+			$notification->created_at,
+			$notification->seen,
+			$notification->quote->movie->user->id,
+		));
 		return response()->noContent();
 	}
 
-	public function removeQuoteHeart(RemoveHeartRequest $request): Response
+	public function getNotifications()
 	{
-		$notification = Notification::where('user_id', $request->input('user_id'))
-		->where('quote_id', $request->input('quote_id'))
-		->where('type', 'heart')->get();
-		event(new NotificationUpdated($notification[0]));
-		$notification->delete();
+		$notifications = Notification::whereHas('quote.movie.user', function ($query) {
+			$query->where('id', auth()->user()->id);
+		})->with(['quote.movie.user'])->orderBy('created_at', 'desc')->get();
+
+		return  response()->json([
+			'data'  => QuoteNotificationResource::collection($notifications),
+		]);
+	}
+
+	public function setNotificationSeen(Request $request): Response
+	{
+		if ($request->input('id')) {
+			$not = Notification::find($request->input('id'));
+			$not->seen = true;
+			$not->save();
+		}
+		return response()->noContent();
+	}
+
+	public function setAllNotificationsSeen(): Response
+	{
+		Notification::query()->update(['seen' => true]);
 		return response()->noContent();
 	}
 }
