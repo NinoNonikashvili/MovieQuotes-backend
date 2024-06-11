@@ -184,7 +184,7 @@ Then everything should be OK :pray:
 * [Figma Design](https://www.figma.com/design/5uMXCg3itJwpzh9cVIK3hA/Movie-Quotes-Bootcamp-assignment?node-id=225-15639&t=vzKlex6ll1A8dC1m-0)
 * [Postman API documentation](https://documenter.getpostman.com/view/33904104/2sA3XMhN9t)
 * DataBade Diagram
- <img src="/public/images/drawSQL-image.png" width="600" style="position: relative; top: 4px" /> 
+ <img src="/public/drawSQL-image.png" width="600" style="position: relative; top: 4px" /> 
 
 
 
