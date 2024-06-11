@@ -16,7 +16,7 @@ class QuoteResourceBilingual extends JsonResource
 	{
 		return [
 			'quote_text'      => $this->getTranslations('quote'),
-			'quote_image'     => $this->getFirstMediaUrl('images'),
+			'quote_image'     => $this? $this->getFirstMediaUrl('images'): '',
 			'comment_number'  => $this->notifications->where('quote_id', $this->id)
 													->where('type', 'comment')
 													->count(),

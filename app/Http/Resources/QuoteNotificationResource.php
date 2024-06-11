@@ -19,7 +19,7 @@ class QuoteNotificationResource extends JsonResource
 			'quote_id'                         => $this->quote->id,
 			'notification_id'                  => $this->id,
 			'notification_author_name'         => $this->user->name,
-			'notification_author_image'        => User::find($this->user->id)->getFirstMediaUrl('users'),
+			'notification_author_image'        => User::find($this->user->id) ? User::find($this->user->id)->getFirstMediaUrl('users') : '',
 			'action'                           => $this->type,
 			'create_at'                        => $this->created_at,
 			'seen'                             => $this->seen,

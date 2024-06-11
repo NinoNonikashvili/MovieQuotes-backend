@@ -20,7 +20,7 @@ class UserResource extends JsonResource
 			'id'        => $this->id,
 			'name'      => $this->name,
 			'email'     => $this->email,
-			'image'     => $this->getFirstMedia('users')->getUrl(),
+			'image'     => $this? $this->getFirstMedia('users')->getUrl() : '',
 			'google_id' => $this->google_id,
 		];
 	}
