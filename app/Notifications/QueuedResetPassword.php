@@ -49,12 +49,16 @@ class QueuedResetPassword extends Notification implements ShouldQueue
 
 		$expire = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
 		return (new MailMessage)
-			->greeting('Reset your password')
-			->subject('Reset Password Notification')
-			->line('You are receiving this email because we received a password reset request for your account.')
-			->line("this link will expire in $expire minutes")
-			->action('Reset Password', $front_url)
-			->salutation('  ');
+		->theme('custom')
+		->subject(__('email.btn_reset_password'))
+		->greeting(__('email.greeting'), $notifiable->name)
+		->line(__('email.text_password_reset'))
+		->action(__('email.btn_reset_password'), $front_url)
+		->line(__("email.text_link_plan_b"))
+		->line($front_url)
+		->line(__('email.text_contact_us'))	
+		->line(__('email.signature'))
+		->salutation('  ');
 	}
 
 	/**
