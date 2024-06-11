@@ -46,9 +46,16 @@ class QueuedVerifyEmail extends Notification implements ShouldQueue
 		);
 		$front_url = str_replace(env('APP_URL') . '/api/email/verify/', env('FRONTEND_URL') . '/email/verify/en/', $url);
 		return (new MailMessage)
-				->subject('Verify Email')
-				->line('TEST: Click the button below to verify your email address.')
-				->action('Verify Email Address', $front_url);
+		->theme('custom')
+		->subject(__('email.btn_verify_account'))
+		->greeting(__('email.greeting'), $notifiable->name)
+		->line(__('email.text_email_verify'))
+		->action(__('email.btn_verify_account'), $front_url)
+		->line(__("email.text_link_plan_b"))
+		->line($front_url)
+		->line(__('email.text_contact_us'))	
+		->line(__('email.signature'))
+		->salutation('  ');
 	}
 
 	/**
