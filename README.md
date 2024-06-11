@@ -1,66 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div style="display:flex; align-items: center">
+  <h1 style="position:relative; top: -6px" >Movie quotes app</h1>
+</div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+Movie Quote is a platform for people discover millions of quotes from different movies.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+On movie quote platform you can register, create your own movies, post related quotes and show them to the world!
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Here you also get reactions and comments from other users of movie quote platform!
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#
+### Table of Contents
+* [Prerequisites](#prerequisites)
+* [Tech Stack](#tech-stack)
+* [Getting Started](#getting-started)
+* [Migrations](#migration)
+* [Broadcasting](#broadcasting)
+* [Development](#development)
+* [Deployment with CI / CD](#deployment-with-ci-\-cd)
+* [Resources](#resources)
 
-## Learning Laravel
+#
+### Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* <img src="https://pngimg.com/uploads/php/php_PNG43.png" width="35" style="position: relative; top: 4px" /> *PHP@8.2 and up*
+* <img src="https://tse1.mm.bing.net/th?id=OIP.lIIc_svaWdGdEJuEk7TBlgHaHa&pid=Api&P=0&h=220" width="35" style="position: relative; top: 4px" /> *MYSQL@8 and up*
+* <img src="https://tse2.mm.bing.net/th?id=OIP.mmXEW6CkG5NfwwM3UdzXcwHaHa&pid=Api&P=0&h=220" width="35" style="position: relative; top: 4px" /> *npm@6 and up*
+* <img src="https://tse1.mm.bing.net/th?id=OIP.mFob_nJmwmMPrR4V7M9sAQHaJz&pid=Api&P=0&h=220" width="35" style="position: relative; top: 6px" /> *composer@2 and up*
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#
+### Tech Stack
 
-## Laravel Sponsors
+* <img src="https://brandlogos.net/wp-content/uploads/2022/01/laravel-logo-brandlogo.net_-300x300.png" height="18" style="position: relative; top: 4px" /> [Laravel@11.x](https://laravel.com/docs/10.x/) - back-end framework
+* <img src="https://brandlogos.net/wp-content/uploads/2022/01/laravel-logo-brandlogo.net_-300x300.png" height="18" style="position: relative; top: 4px" /> [Laravel Sanctum](https://laravel.com/docs/10.x/) - authentication system for SPAs
+* <img src="https://avatars0.githubusercontent.com/u/7535935?v=4" height="19" style="position: relative; top: 4px" /> [Spatie Translatable](https://avatars0.githubusercontent.com/u/7535935?v=4) - package for translation
+* <img src="https://avatars0.githubusercontent.com/u/7535935?v=4" height="19" style="position: relative; top: 4px" /> [Spatie Media Library](https://avatars0.githubusercontent.com/u/7535935?v=4) - package for simplifing working with files
+*  <img src="https://avatars0.githubusercontent.com/u/7535935?v=4" height="19" style="position: relative; top: 4px" /> [Spatie Laravel query builder](https://avatars0.githubusercontent.com/u/7535935?v=4) - package for building queries easier
+* <img src="https://brandlogos.net/wp-content/uploads/2022/01/laravel-logo-brandlogo.net_-300x300.png" height="18" style="position: relative; top: 4px" /> [Pest](https://laravel.com/docs/10.x/) - package for testing
+* <img src="https://brandlogos.net/wp-content/uploads/2022/01/laravel-logo-brandlogo.net_-300x300.png" height="18" style="position: relative; top: 4px" /> [Pusher](https://laravel.com/docs/10.x/) - broadcasting using pusher channels
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#
+### Getting Started
+1\. First of all you need to clone Movie quotes repository from github:
+```sh
+git clone https://github.com/RedberryInternship/back-movie-quotes-nino-nonikashvili
+```
 
-### Premium Partners
+2\. Next step requires you to run *composer install* in order to install all the dependencies.
+```sh
+composer install
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3\. after you have installed all the PHP dependencies, it's time to install all the JS dependencies:
+```sh
+npm install
+```
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+4\. Now we need to set our env file. Go to the root of your project and execute this command.
+```sh
+cp .env.example .env
+```
+And now you should provide **.env** file all the necessary environment variables:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#
+**MYSQL:**
+>DB_CONNECTION=mysql
 
-## Security Vulnerabilities
+>DB_HOST=127.0.0.1
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+>DB_PORT=3306
 
-## License
+>DB_DATABASE=*****
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+>DB_USERNAME=*****
+
+>DB_PASSWORD=*****
+
+
+#
+**Gmail:**
+>MAIL_MAILER=smtp
+
+>MAIL_HOST=0.0.0.0
+
+>MAIL_PORT=1025
+
+>MAIL_FROM_ADDRESS=******
+
+#
+**Google Auth credentials for Socialite:**
+>GOOGLE_CLIENT_ID= ******
+
+>GOOGLE_CLIENT_SECRET = ******
+
+>GOOGLE_REDIRECT = ******
+
+
+#
+**Media for spatie media library:**
+>MEDIA_DISK='media'
+
+#
+**Broadcating:**
+>BROADCAST_CONNECTION=pusher
+
+>BROADCAST_DRIVER=pusher
+
+>PUSHER_APP_ID=******
+
+>PUSHER_APP_KEY=******
+
+>PUSHER_APP_SECRET=******
+
+>PUSHER_APP_CLUSTER=**
+
+
+
+after setting up **.env** file, execute:
+```sh
+php artisan config:cache
+```
+in order to cache environment variables.
+
+4\. Now execute in the root of you project following:
+```sh
+  php artisan key:generate
+```
+Which generates auth key.
+
+##### Now, you should be good to go!
+
+
+#
+### Migration
+if you've completed getting started section, then migrating database if fairly simple process, just execute:
+```sh
+php artisan migrate
+```
+#
+### Broadcasting
+In order to recieve notifications in real time you need to start queue by typing :
+```sh
+php artisan queue:work
+```
+
+#
+### Running Feature tests
+Running feature tests also is very simple process. you can create separate file .env.testing where you provide credentials for new database for testing purposes and just run the following command:
+
+```sh
+php artisan test <FileNameTest> --pest
+```
+
+#
+### Development
+
+You can run Laravel's built-in development server by executing:
+
+```sh
+  php artisan serve
+```
+
+
+#
+### Deployment with CI \ CD
+
+
+Continues Development / Continues Integration & Deployment steps:
+* CI \ CD process first step is of course is development.
+* After some time of development when you are ready to integrate and deploy your feature/fix/work you make a commit or pull request to gihub branch.
+* That triggers github action which listens to pull requests and commits on development and main branch. Github actions will set up configure project.
+* If process succeed then github actions will deploy your code to development or production server according to the branch you are making commit to.
+* After deploying, github actions script will build your code and run migrations all to be up to date.
+
+Then everything should be OK :pray:
+
+#
+### Resources
+
+* [Figma Design](https://www.figma.com/design/5uMXCg3itJwpzh9cVIK3hA/Movie-Quotes-Bootcamp-assignment?node-id=225-15639&t=vzKlex6ll1A8dC1m-0)
+* [Postman API documentation](https://documenter.getpostman.com/view/33904104/2sA3XMhN9t)
+* DataBade Diagram
+ <img src="/public/images/drawSQL-image.png" width="600" style="position: relative; top: 4px" /> 
+
+
+
