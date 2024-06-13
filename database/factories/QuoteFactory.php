@@ -19,7 +19,7 @@ class QuoteFactory extends Factory
 	{
 		return [
 			'quote'    => ['en' => $this->faker->sentence(), 'ge' => GeorgianFactory::create('ka_GE')->realText(15)],
-			'movie_id' => random_int(1, 9),
+			'movie_id' => 1,
 		];
 	}
 }

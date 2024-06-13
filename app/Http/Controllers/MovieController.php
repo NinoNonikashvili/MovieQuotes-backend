@@ -64,7 +64,7 @@ class MovieController extends Controller
 			'user_id'=> $request->input('user_id'),
 		]);
 		if ($movie) {
-			$movie->addMediaFromRequest('image')->toMediaCollection('images');
+			$movie->addMediaFromRequest('image')->toMediaCollection('movies');
 		}
 		$movie->genres()->attach($request->input('genre'));
 		return response()->noContent();
@@ -112,10 +112,10 @@ class MovieController extends Controller
 			$movie->year = $request->input('year');
 		}
 		if ($request->has('image')) {
-			if ($media = $movie->getFirstMedia('images')) {
+			if ($media = $movie->getFirstMedia('movies')) {
 				$media->delete();
 			}
-			$movie->addMediaFromRequest('image')->toMediaCollection('images');
+			$movie->addMediaFromRequest('image')->toMediaCollection('movies');
 		}
 		$movie->save();
 
@@ -127,7 +127,7 @@ class MovieController extends Controller
 	 */
 	public function destroy(Movie $movie): Response
 	{
-		if ($media = $movie->getFirstMedia('images')) {
+		if ($media = $movie->getFirstMedia('movies')) {
 			$media->delete();
 		}
 		$movie->delete();

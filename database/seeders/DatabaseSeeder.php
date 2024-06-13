@@ -17,9 +17,8 @@ class DatabaseSeeder extends Seeder
 	 */
 	public function run(): void
 	{
-		User::factory(10)->create();
+		User::factory(1)->create();
 
-		Genre::factory(3)->create();
 		Movie::factory()->hasAttached(Genre::factory(2))->create(
 			['user_id' => 1]
 		);
