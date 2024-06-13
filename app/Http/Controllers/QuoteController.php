@@ -72,7 +72,7 @@ class QuoteController extends Controller
 			'movie_id' => $request->input('movie_id'),
 		]);
 		if ($quote) {
-			$quote->addMediaFromRequest('image')->toMediaCollection('images');
+			$quote->addMediaFromRequest('image')->toMediaCollection('quotes');
 		}
 		return response()->noContent();
 	}
@@ -107,10 +107,10 @@ class QuoteController extends Controller
 			$quote->setTranslation('quote', 'ge', $request->input('quote_ge'));
 		}
 		if ($request->has('image')) {
-			if ($media = $quote->getFirstMedia('images')) {
+			if ($media = $quote->getFirstMedia('quotes')) {
 				$media->delete();
 			}
-			$quote->addMediaFromRequest('image')->toMediaCollection('images');
+			$quote->addMediaFromRequest('image')->toMediaCollection('quotes');
 		}
 		$quote->save();
 		return response()->noContent();
@@ -121,7 +121,7 @@ class QuoteController extends Controller
 	 */
 	public function destroy(Quote $quote): Response
 	{
-		if ($media = $quote->getFirstMedia('images')) {
+		if ($media = $quote->getFirstMedia('quotes')) {
 			$media->delete();
 		}
 		$quote->delete();

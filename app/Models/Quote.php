@@ -43,8 +43,8 @@ class Quote extends Model implements HasMedia
 
 	public function registerMediaCollections(): void
 	{
-		$this->addMediaCollection('images')
-		->useDisk('quotes')
+		$this->addMediaCollection('quotes')
+		->useDisk('media')
 		->singleFile();
 	}
 

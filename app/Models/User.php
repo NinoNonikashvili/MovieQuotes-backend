@@ -75,7 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
 	public function registerMediaCollections(): void
 	{
 		$this->addMediaCollection('users')
-		->useDisk('users')
+		->useDisk('media')
 		->singleFile();
 	}
 
