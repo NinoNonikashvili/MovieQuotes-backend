@@ -45,19 +45,49 @@ return [
 		],
 
 		'quotes' => [
-			'driver' => 'local',
-			'root'   => public_path('media/quotes'),
-			'url'    => env('APP_URL') . '/media/quotes',
+			'driver'      => 'local',
+			'root'        => public_path('media/quotes'),
+			'url'         => env('APP_URL') . '/media/quotes',
+			'permissions' => [
+				'file' => [
+					'public'  => 0774,
+					'private' => 0600,
+				],
+				'dir' => [
+					'public'  => 0775,
+					'private' => 0700,
+				],
+			],
 		],
 		'users' => [
-			'driver' => 'local',
-			'root'   => public_path('media/users'),
-			'url'    => env('APP_URL') . '/media/users',
+			'driver'      => 'local',
+			'root'        => public_path('media/users'),
+			'url'         => env('APP_URL') . '/media/users',
+			'permissions' => [
+				'file' => [
+					'public'  => 0774,
+					'private' => 0600,
+				],
+				'dir' => [
+					'public'  => 0775,
+					'private' => 0700,
+				],
+			],
 		],
 		'movies' => [
-			'driver' => 'local',
-			'root'   => public_path('media/movies'),
-			'url'    => env('APP_URL') . '/media/movies',
+			'driver'      => 'local',
+			'root'        => public_path('media/movies'),
+			'url'         => env('APP_URL') . '/media/movies',
+			'permissions' => [
+				'file' => [
+					'public'  => 0774,
+					'private' => 0600,
+				],
+				'dir' => [
+					'public'  => 0775,
+					'private' => 0700,
+				],
+			],
 		],
 
 		'local' => [
