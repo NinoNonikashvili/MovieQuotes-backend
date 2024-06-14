@@ -32,16 +32,6 @@ return [
 			'driver'      => 'local',
 			'root'        => public_path('media'),
 			'url'         => env('APP_URL') . '/media',
-			'permissions' => [
-				'file' => [
-					'public'  => 0666,
-					'private' => 0600,
-				],
-				'dir' => [
-					'public'  => 0777,
-					'private' => 0700,
-				],
-			],
 		],
 
 		'local' => [
