@@ -189,7 +189,7 @@ class AuthController extends Controller
 				'google_id' => $googleUser->id,
 			],
 			[
-				'name'              => 'user',
+				'name'              => $googleUser->name,
 				'email'             => $googleUser->email,
 				'email_verified_at' => now(),
 			]
