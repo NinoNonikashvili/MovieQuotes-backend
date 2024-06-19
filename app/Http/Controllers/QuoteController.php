@@ -25,22 +25,24 @@ class QuoteController extends Controller
 	 */
 	public function index(Request $request): JsonResponse
 	{
+		$query = Quote::with(['notifications', 'movie'])->orderBy('id', 'desc');
+
 		if ($request->has('search')) {
 			if ($request->input('search')[0] === '@') {
-				$quotes = Quote::with(['notifications', 'movie'])->whereHas('movie', function ($query) use ($request) {
+				$query->whereHas('movie', function ($query) use ($request) {
 					$query->where('title', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
-				})->cursorPaginate(4);
+				});
 			} elseif ($request->input('search')[0] === '#') {
-				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%')->cursorPaginate(4);
+				$query->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
 			} else {
-				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . $request->input('search') . '%')
+				$query->where('quote', 'LIKE', '%' . $request->input('search') . '%')
 				->orWhereHas('movie', function ($query) use ($request) {
 					$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
-				})->cursorPaginate(4);
+				});
 			}
-		} else {
-			$quotes = Quote::with(['notifications', 'movie'])->cursorPaginate(4);
-		}
+		} 
+		$quotes = $query->cursorPaginate(9);
+		
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
 			'next_url' => $quotes->nextPageUrl(),
