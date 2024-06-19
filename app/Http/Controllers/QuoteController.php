@@ -40,9 +40,9 @@ class QuoteController extends Controller
 					$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
 				});
 			}
-		} 
+		}
 		$quotes = $query->cursorPaginate(9);
-		
+
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
 			'next_url' => $quotes->nextPageUrl(),
@@ -131,7 +131,7 @@ class QuoteController extends Controller
 		return response()->noContent();
 	}
 
-	public function addQuoteNotification(AddNotificationRequest $request): Response
+	public function addQuoteNotification(AddNotificationRequest $request)
 	{
 		$notification = Notification::create($request->validated());
 		//add row in reactions table
@@ -142,16 +142,19 @@ class QuoteController extends Controller
 			);
 		}
 
-		event(new NotificationUpdated(
-			$notification->quote->id,
-			$notification->id,
-			$notification->user->name,
-			User::find($notification->user->id)->getFirstMediaUrl('users'),
-			$notification->type,
-			$notification->created_at,
-			$notification->seen,
-			$notification->quote->movie->user->id,
-		));
+		// if the author of notification is not the author of the quote fire an event
+		if ( $request->user_id != $notification->quote->movie->user->id) {
+			event(new NotificationUpdated(
+				$notification->quote->id,
+				$notification->id,
+				$notification->user->name,
+				User::find($notification->user->id)->getFirstMediaUrl('users'),
+				$notification->type,
+				$notification->created_at,
+				$notification->seen,
+				$notification->quote->movie->user->id,
+			));
+		}
 		return response()->noContent();
 	}
 
