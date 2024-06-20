@@ -21,12 +21,11 @@ class MovieController extends Controller
 	 */
 	public function index(Request $request): JsonResponse
 	{
+		$query = Movie::where('user_id', Auth::id())->orderBy('id', 'desc');
 		if ($request->has('search')) {
-			$movies = Movie::where('user_id', Auth::id())->where('title', 'LIKE', '%' . $request->input('search') . '%')->cursorPaginate(4);
-		} else {
-			$movies = Movie::where('user_id', Auth::id())
-			->cursorPaginate(4);
+			$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
 		}
+		$movies = $query->cursorPaginate(4);
 		return response()->json([
 			'data'     => MovieResource::collection($movies),
 			'next_url' => $movies->nextPageUrl(),
@@ -79,7 +78,9 @@ class MovieController extends Controller
 			'data' => new MovieBilingualResource($movie),
 		]);
 	}
-	public function single(Movie $movie) : JsonResponse{
+
+	public function single(Movie $movie): JsonResponse
+	{
 		return response()->json([
 			'data' => new MovieResource($movie),
 		]);

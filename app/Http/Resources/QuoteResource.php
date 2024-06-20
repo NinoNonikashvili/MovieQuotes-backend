@@ -22,9 +22,10 @@ class QuoteResource extends JsonResource
 			'user_avatar'     => User::find(Auth::user()->id) ? User::find(Auth::user()->id)->getFirstMediaUrl('users') : '',
 			'author_name'     => $this->movie->user->name,
 			'quote_text'      => $this->quote,
-			'quote_image'     => $this? $this->getFirstMediaUrl('quotes') : '',
+			'quote_image'     => $this ? $this->getFirstMediaUrl('quotes') : '',
 			'quote_year'      => $this->whenLoaded('movie')->year,
 			'quote_director'  => $this->whenLoaded('movie')->director,
+			'movie_title'     => $this->whenLoaded('movie') ? $this->whenLoaded('movie')->title : '',
 			'comment_number'  => $this->whenLoaded('notifications', function ($notifications) {
 				return $notifications->where('quote_id', $this->id)
 										->where('type', 'comment')

@@ -25,22 +25,24 @@ class QuoteController extends Controller
 	 */
 	public function index(Request $request): JsonResponse
 	{
+		$query = Quote::with(['notifications', 'movie'])->orderBy('id', 'desc');
+
 		if ($request->has('search')) {
 			if ($request->input('search')[0] === '@') {
-				$quotes = Quote::with(['notifications', 'movie'])->whereHas('movie', function ($query) use ($request) {
+				$query->whereHas('movie', function ($query) use ($request) {
 					$query->where('title', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
-				})->cursorPaginate(4);
+				});
 			} elseif ($request->input('search')[0] === '#') {
-				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%')->cursorPaginate(4);
+				$query->where('quote', 'LIKE', '%' . substr($request->input('search'), 1) . '%');
 			} else {
-				$quotes = Quote::with(['notifications', 'movie'])->where('quote', 'LIKE', '%' . $request->input('search') . '%')
+				$query->where('quote', 'LIKE', '%' . $request->input('search') . '%')
 				->orWhereHas('movie', function ($query) use ($request) {
 					$query->where('title', 'LIKE', '%' . $request->input('search') . '%');
-				})->cursorPaginate(4);
+				});
 			}
-		} else {
-			$quotes = Quote::with(['notifications', 'movie'])->cursorPaginate(4);
 		}
+		$quotes = $query->cursorPaginate(9);
+
 		return response()->json([
 			'quotes'   => QuoteResource::collection($quotes),
 			'next_url' => $quotes->nextPageUrl(),
@@ -129,7 +131,7 @@ class QuoteController extends Controller
 		return response()->noContent();
 	}
 
-	public function addQuoteNotification(AddNotificationRequest $request): Response
+	public function addQuoteNotification(AddNotificationRequest $request)
 	{
 		$notification = Notification::create($request->validated());
 		//add row in reactions table
@@ -140,16 +142,19 @@ class QuoteController extends Controller
 			);
 		}
 
-		event(new NotificationUpdated(
-			$notification->quote->id,
-			$notification->id,
-			$notification->user->name,
-			User::find($notification->user->id)->getFirstMediaUrl('users'),
-			$notification->type,
-			$notification->created_at,
-			$notification->seen,
-			$notification->quote->movie->user->id,
-		));
+		// if the author of notification is not the author of the quote fire an event
+		if ( $request->user_id != $notification->quote->movie->user->id) {
+			event(new NotificationUpdated(
+				$notification->quote->id,
+				$notification->id,
+				$notification->user->name,
+				User::find($notification->user->id)->getFirstMediaUrl('users'),
+				$notification->type,
+				$notification->created_at,
+				$notification->seen,
+				$notification->quote->movie->user->id,
+			));
+		}
 		return response()->noContent();
 	}
 
