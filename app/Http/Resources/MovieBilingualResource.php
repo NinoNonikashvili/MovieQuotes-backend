@@ -22,7 +22,7 @@ class MovieBilingualResource extends JsonResource
 			'director'    => $this->getTranslations('director'),
 			'genres'      => GenreResource::collection($this->genres),
 			'quote_num'   => $this->quotes->count(),
-			'image'       => $this->getFirstMediaUrl('images'),
+			'image'       => $this ? $this->getFirstMediaUrl('movies') : '',
 		];;
     }
 }

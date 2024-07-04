@@ -29,24 +29,10 @@ return [
 
 	'disks' => [
 		'media' => [
-			'driver' => 'local',
-			'root'   => public_path('media'),
-			'url'    => env('APP_URL') . '/media',
-		],
-		'quotes' => [
-			'driver' => 'local',
-			'root'   => public_path('media/quotes'),
-			'url'    => env('APP_URL') . '/media/quotes',
-		],
-		'users' => [
-			'driver' => 'local',
-			'root'   => public_path('media/users'),
-			'url'    => env('APP_URL') . '/media/users',
-		],
-		'movies' => [
-			'driver' => 'local',
-			'root'   => public_path('media/movies'),
-			'url'    => env('APP_URL') . '/media/movies',
+			'driver'      => 'local',
+			'root'        => public_path('media'),
+			'url'         => env('APP_URL') . '/media',
+			'visibility'  => 'public',
 		],
 
 		'local' => [

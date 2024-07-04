@@ -21,7 +21,7 @@ class UserController extends Controller
 		}
 
 		if ($request->has('image')) {
-			$oldAvatar = $user->getFirstMedia();
+			$oldAvatar = $user->getFirstMedia('users');
 
 			if ($oldAvatar) {
 				$oldAvatar->delete();
